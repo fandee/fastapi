@@ -51,17 +51,34 @@ def home():
 
 @app.get("/book")
 def get_book(title: str):
-    for book in books:
-        if book.title == title:
-            return {
-                "book": {
-                    "title": book.title,
-                    "genre": book.genre,
-                    "author": book.genre,
-                    "pages": book.pages
-                }
+    try:
+        cursor.execute("""SELECT DISTINCT b.id, b.title, a.author_name, b.pages, g.genre from books b
+                    JOIN authors a ON a.id = b.author_id
+                    JOIN book_genre bg ON bg.book_id = b.id
+                    JOIN genres g ON g.id = bg.genre_id
+                    WHERE b.title = %s""",
+                    (title,))
+        data = cursor.fetchall()
+        book = Book(
+            id = data[0][0],
+            title = data[0][1],
+            author = data[0][2],
+            pages = data[0][3],
+            genres = []
+        )
+        for row in data:
+            book.genres.append(row[4])
+        return {
+            book.id: {
+                "title": book.title,
+                "author": book.author,
+                "genre": book.genres,
+                "pages": book.pages
             }
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        }
+    except Exception as e:
+        print("[ERROR]", e)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @app.post("/book")
