@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 import psycopg2
@@ -6,7 +7,7 @@ import config
 app = FastAPI()
 
 class Book(BaseModel):
-    id: int
+    id: Optional[int]
     title: str
     author: str
     genres: list
@@ -81,13 +82,34 @@ def get_book(title: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
+
 @app.post("/book")
-def add_book(new_book: Book):
-    for book in books:
-        if new_book.title == book.title:
-            raise HTTPException(status_code=status.HTTP_306_RESERVED)
-    books.append(new_book)
-    raise HTTPException(status_code=status.HTTP_201_CREATED)
+def add_book(book: Book):
+    # check if book is already in DB
+    cursor.execute("SELECT 1 FROM books WHERE title = %s AND author_id = (SELECT id FROM authors WHERE author_name = %s)", (book.title, book.author))
+    # not in DB
+    if not cursor.fetchone():
+        # unknown author - id 1
+        if not book.author.strip():
+            author_id = 1
+        else:
+            cursor.execute("SELECT id FROM authors WHERE author_name = %s", (book.author,))
+            try:
+                author_id = cursor.fetchone()[0]
+            except:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown author")
+        cursor.execute("INSERT INTO books (title, author_id, pages) VALUES (%s, %s, %s)", (book.title, author_id, book.pages))
+        cursor.execute("SELECT max(id) FROM books")
+        book.id = cursor.fetchone()[0]
+        for genre in book.genres:
+            try:
+                cursor.execute("INSERT INTO book_genre (book_id, genre_id) VALUES (%s, (SELECT id FROM genres WHERE genre = %s))", (book.id, genre))
+            except Exception as e:
+                print("[ERROR]", e)
+        raise HTTPException(status_code=status.HTTP_201_CREATED, detail="book added")
+    # book is already in DB
+    else:
+        raise HTTPException(status_code=status.HTTP_306_RESERVED, detail="This book is already in DataBase")
 
 
 @app.delete("/book")
