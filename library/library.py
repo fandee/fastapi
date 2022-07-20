@@ -82,7 +82,6 @@ def get_book(title: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-
 @app.post("/book")
 def add_book(book: Book):
     # check if book is already in DB
@@ -116,3 +115,16 @@ def add_book(book: Book):
 def delete_book(title: str, author: str):
     cursor.execute("DELETE FROM books WHERE title = %s AND author_id = (SELECT id FROM authors WHERE author_name = %s)", (title, author))
     raise HTTPException(status_code=status.HTTP_200_OK, detail="book deleted")
+
+
+@app.post("/author")
+def add_author(author_name: str):
+    # check if author is already in DB
+    cursor.execute("SELECT 1 FROM authors WHERE author_name = %s", (author_name,))
+    # no
+    if not cursor.fetchone():
+        cursor.execute("INSERT INTO authors (author_name) VALUES (%s)", (author_name,))
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="added author")
+    # yes
+    else:
+        raise HTTPException(status_code=status.HTTP_306_RESERVED, detail="author is already in DB")
