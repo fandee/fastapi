@@ -113,9 +113,6 @@ def add_book(book: Book):
 
 
 @app.delete("/book")
-def delete_book(title: str):
-    for i in range(len(books)):
-        if title == books[i].title:
-            del books[i]
-            raise HTTPException(status_code=status.HTTP_200_OK)
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+def delete_book(title: str, author: str):
+    cursor.execute("DELETE FROM books WHERE title = %s AND author_id = (SELECT id FROM authors WHERE author_name = %s)", (title, author))
+    raise HTTPException(status_code=status.HTTP_200_OK, detail="book deleted")
