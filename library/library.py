@@ -117,6 +117,15 @@ def delete_book(title: str, author: str):
     raise HTTPException(status_code=status.HTTP_200_OK, detail="book deleted")
 
 
+@app.get("/authors")
+def get_authors():
+    cursor.execute("SELECT * FROM authors")
+    authors = {}
+    for row in cursor.fetchall():
+        authors[row[0]] = row[1]
+    return authors
+
+
 @app.post("/author")
 def add_author(author_name: str):
     # check if author is already in DB
