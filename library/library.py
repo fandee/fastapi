@@ -137,3 +137,10 @@ def add_author(author_name: str):
     # yes
     else:
         raise HTTPException(status_code=status.HTTP_306_RESERVED, detail="author is already in DB")
+
+
+@app.delete("/author")
+def delete_author(author_name: str):
+    # delete author
+    cursor.execute("DELETE FROM authors WHERE author_name = %s", (author_name,))
+    raise HTTPException(status_code=status.HTTP_200_OK)
