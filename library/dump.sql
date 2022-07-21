@@ -39,11 +39,11 @@ CREATE TABLE IF NOT EXISTS public.libraries
     UNIQUE(name, address)
 );
 
-CREATE TABLE IF NOT EXISTS public.library_book
+CREATE TABLE IF NOT EXISTS public.library_stock
 (
     library_id integer NOT NULL,
     book_id integer NOT NULL,
-    stock integer NOT NULL DEFAULT 1,
+    count integer NOT NULL DEFAULT 1,
     UNIQUE(library_id, book_id),
     CONSTRAINT fk_library FOREIGN KEY (library_id)
         REFERENCES public.libraries (id)
