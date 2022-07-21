@@ -14,6 +14,11 @@ class Book(BaseModel):
     pages: int
 
 
+class Library(BaseModel):
+    name: str
+    address: str
+
+
 try:
     connection = psycopg2.connect(
         host=config.host,
