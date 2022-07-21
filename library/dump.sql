@@ -29,6 +29,28 @@ CREATE TABLE book_genre (
         FOREIGN KEY(genre_id) REFERENCES genres(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS public.libraries
+(
+    id serial PRIMARY KEY,
+    name varchar(50) NOT NULL,
+    address varchar(50) NOT NULL
+)
+
+CREATE TABLE IF NOT EXISTS public.library_book
+(
+    library_id integer NOT NULL,
+    book_id integer NOT NULL,
+    stock integer NOT NULL DEFAULT 1,
+    CONSTRAINT fk_library FOREIGN KEY (library_id)
+        REFERENCES public.libraries (id)
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT fk_book FOREIGN KEY (book_id)
+        REFERENCES public.books (id)
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
 INSERT INTO genres (genre) VALUES ('gray'),('green'),('lime'),('navy'),('purple');
 INSERT INTO authors (author_name) VALUES ('unknown');
 INSERT INTO authors (author_name) VALUES ('Abraham Jakubowski'),('Adella Kuhn III'),('Alanna Walsh'),('Alvina Shanahan'),('Antonetta Romaguera PhD'),('Arden Schuppe'),('Arlo Monahan'),('Aron Ullrich'),('Bridie Kertzmann'),('Bryana Rowe'),('Camilla Bailey'),('Clifton Streich MD'),('Cordelia Fay'),('Cynthia Hettinger II'),('Danielle Murray DVM'),('Darien Dickinson'),('Dena Haley Jr.'),('Desmond Swift DVM'),('Dina Rohan'),('Dr. Carlotta Powlowski Sr.'),('Dr. Delores Stokes'),('Dr. Dora Denesik III'),('Dr. Josiane Hand Sr.'),('Dr. Kariane Yundt'),('Dr. Marcel Gleichner'),('Dr. Megane Pfannerstill'),('Dr. Merlin Trantow'),('Dr. Velma Macejkovic Jr.'),('Dr. Winifred Vandervort'),('Earlene Fadel Jr.'),('Easton Schoen'),('Ebony Cummings'),('Effie Kilback'),('Elza McDermott MD'),('Gay Prohaska'),('Gunner Macejkovic'),('Hardy Goldner'),('Harley Pagac'),('Ignacio Haag PhD'),('Jalon Emmerich'),('Jeremy Schaden'),('Joanny Bayer'),('Keenan Becker'),('Kevon Watsica'),('Kiley Wintheiser'),('Kris Kuphal Sr.'),('Laisha Haag'),('Layne Goyette'),('Leanne Mayer'),('Lenora Jacobson'),('Leone Glover'),('Lillie Nicolas II'),('Lisette McLaughlin'),('Llewellyn Carroll'),('Lorena Dare'),('Lou Kihn'),('Lukas Reinger Jr.'),('Lynn Schroeder I'),('Maida Stracke II'),('Marielle Turcotte'),('Mathias Sauer'),('Mikel Johnston'),('Miss Beverly Hilpert'),('Miss Lizeth Mitchell'),('Miss Mattie Harvey IV'),('Miss Myrna Macejkovic'),('Mr. Armani Dare MD'),('Mr. Bradley Smith MD'),('Mr. Earnest Prohaska MD'),('Mr. Fausto Nienow'),('Mr. Henry Cormier'),('Mr. Rey Prosacco'),('Mr. Scotty Cummerata'),('Mrs. Adelia Ratke Jr.'),('Mrs. Courtney Ward'),('Mrs. Eula Davis IV'),('Ms. Shana Ullrich'),('Nya Tremblay'),('Ollie Christiansen III'),('Orpha Windler'),('Osvaldo Keebler'),('Payton Casper III'),('Prof. Bill Rice Sr.'),('Prof. Darwin Mueller III'),('Prof. Ellis Hodkiewicz'),('Prof. Forest Smitham III'),('Prof. Izaiah Stracke I'),('Prof. Mervin Hamill I'),('Prof. Sarai Pollich'),('Prof. Treva Bode'),('Prof. Waldo Pfannerstill PhD'),('Rubie Blanda IV'),('Santina McLaughlin'),('Skyla Howell Jr.'),('Tavares Gulgowski'),('Travis Kshlerin'),('Trudie Flatley'),('Tyrese Donnelly'),('Verna Langosh'),('Ward Balistreri');
