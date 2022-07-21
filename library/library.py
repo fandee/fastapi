@@ -144,3 +144,16 @@ def delete_author(author_name: str):
     # delete author
     cursor.execute("DELETE FROM authors WHERE author_name = %s", (author_name,))
     raise HTTPException(status_code=status.HTTP_200_OK)
+
+
+@app.get("/libs")
+def get_libs():
+    # fetching libraries
+    cursor.execute("SELECT id, name, address FROM libraries")
+    libs = {}
+    for row in cursor.fetchall():
+        libs[row[0]] = {
+            "name": row[1],
+            "address": row[2]
+        }
+    return libs
