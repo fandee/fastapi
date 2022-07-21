@@ -17,12 +17,14 @@ CREATE TABLE books (
     title varchar(50) NOT NULL,
     author_id integer NOT NULL DEFAULT 1,
     pages smallint DEFAULT(100),
+    UNIQUE(title, author_id),
     CONSTRAINT fk_author FOREIGN KEY(author_id) REFERENCES authors(id) ON DELETE SET DEFAULT
 );
 
 CREATE TABLE book_genre (
     book_id integer NOT NULL,
     genre_id integer NOT NULL,
+    UNIQUE(book_id, genre_id),
     CONSTRAINT fk_book
         FOREIGN KEY(book_id) REFERENCES books(id) ON DELETE CASCADE,
     CONSTRAINT fk_genre
@@ -42,6 +44,7 @@ CREATE TABLE IF NOT EXISTS public.library_book
     library_id integer NOT NULL,
     book_id integer NOT NULL,
     stock integer NOT NULL DEFAULT 1,
+    UNIQUE(library_id, book_id),
     CONSTRAINT fk_library FOREIGN KEY (library_id)
         REFERENCES public.libraries (id)
         ON UPDATE NO ACTION
