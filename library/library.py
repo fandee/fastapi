@@ -194,3 +194,18 @@ def delete_lib(lib: Library):
         raise HTTPException(status_code=status.HTTP_200_OK, detail=f"Library ({lib.name}) deleted")
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Library ({lib.name}) was not found")
+
+
+@app.post("/lib/stock")
+def update_lib_stock(stock: Stock):
+    # Put book in library's stock
+    try:
+        cursor.execute("SELECT id FROM libraries WHERE name = %s AND address = %s", (stock.lib_name, stock.lib_address))
+        lib_id = cursor.fetchone()[0]
+        cursor.execute("SELECT id FROM books WHERE title = %s AND author_id = (SELECT id FROM authors WHERE author_name = %s)", (stock.book_title, stock.book_author))
+        book_id = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO library_stock (library_id, book_id, count) VALUES (%s, %s, %s)", (lib_id, book_id, stock.count))
+        return "library stock updated"
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
