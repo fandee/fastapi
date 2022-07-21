@@ -56,5 +56,5 @@ INSERT INTO genres (genre) VALUES ('fiction'),('nonfiction'),('drama'),('poetry'
 INSERT INTO authors (author_name) VALUES ('unknown'),('Stephen King'),('Dan Brown'),('J. K. Rowling'),('James Patterson'),('David Baldacci'),('Nora Roberts'),('Michael Connelly');
 INSERT INTO books (title, author_id, pages) VALUES ('It', 2, 1231),('The Shining',2,447),('New Life',1,140),('Da Vinci Code',3,689),('Angels and Demons',3,768),('The Awakening: The Dragon Heart Legacy',7,419),('Harry Potter and the Philosopher''s Stone',4,223);
 INSERT INTO book_genre VALUES (1,8),(1,9),(1,3),(2,1),(2,8),(2,9),(3,1),(4,12),(4,1),(4,8),(4,13),(5,13),(5,8),(6,10),(6,1),(6,7),(7,3),(7,7);
-INSERT INTO libraries (name, address) VALUES ('New York Public Library', 'New York,NY,USA'),('Brooklyn Public Library', 'Brooklyn,NY,USA'), ('National Library of China','Beijing,China'),('State Library of Victoria','Melbourne,Australia'),('British Library', 'London,UK');
+INSERT INTO libraries (name, address) VALUES ('New York Public Library', 'USA'),('Brooklyn Public Library', 'USA'), ('National Library of China','China'),('State Library of Victoria','Australia'),('British Library', 'UK');
 INSERT INTO library_book VALUES (1,5,3),(1,1,1),(1,3,10),(2,6,2),(2,7,5);
