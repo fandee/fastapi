@@ -162,3 +162,17 @@ def get_libs():
             "address": row[2]
         }
     return libs
+
+
+@app.post("/lib")
+def add_lib(lib: Library):
+    # adding new library
+    try:    
+        cursor.execute("INSERT INTO libraries (name, address) VALUES (%s, %s)", (lib.name, lib.address))
+        return {
+            "detail": f"Added library ({lib.name}, {lib.address})"
+        }
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Library ({lib.name}, {lib.address}) was not added")
+

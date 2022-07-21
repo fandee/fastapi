@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS public.libraries
 (
     id serial PRIMARY KEY,
     name varchar(50) NOT NULL,
-    address varchar(50) NOT NULL
+    address varchar(50) NOT NULL,
+    UNIQUE(name, address)
 );
 
 CREATE TABLE IF NOT EXISTS public.library_book
