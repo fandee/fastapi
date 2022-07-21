@@ -176,3 +176,13 @@ def add_lib(lib: Library):
         print(e)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Library ({lib.name}, {lib.address}) was not added")
 
+
+@app.delete("/lib")
+def delete_lib(lib: Library):
+    # delete library if exists
+    cursor.execute("SELECT 1 FROM libraries WHERE name = %s AND address = %s", (lib.name, lib.address))
+    if cursor.fetchone():
+        cursor.execute("DELETE FROM libraries WHERE name = %s", (lib.name,))
+        raise HTTPException(status_code=status.HTTP_200_OK, detail=f"Library ({lib.name}) deleted")
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Library ({lib.name}) was not found")
