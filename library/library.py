@@ -185,9 +185,14 @@ def add_author(author_name: str):
 
 @app.delete("/author")
 def delete_author(author_name: str):
-    # delete author
-    cursor.execute("DELETE FROM authors WHERE author_name = %s", (author_name,))
-    raise HTTPException(status_code=status.HTTP_200_OK)
+    # delete author if exists
+    cursor.execute("SELECT 1 FROM authors WHERE author_name = %s", (author_name,))
+
+    if cursor.fetchone():
+        cursor.execute("DELETE FROM authors WHERE author_name = %s", (author_name,))
+        raise HTTPException(status_code=status.HTTP_200_OK)
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @app.get("/libs")
