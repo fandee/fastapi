@@ -40,27 +40,45 @@ except Exception as e:
     print("[ERROR]", e)
 
 
-@app.get("/")
-def home():
-    cursor.execute("""SELECT DISTINCT b.id, b.title, a.author_name, b.pages, g.genre from books b
-                JOIN authors a ON a.id = b.author_id
-                JOIN book_genre bg ON bg.book_id = b.id
-                JOIN genres g ON g.id = bg.genre_id ORDER BY b.id""")
-    data = cursor.fetchall()
-    books = {}
-    for row in data:
-        id = row[0]
-        if id in books:
-            books[id].genres.append(row[4])
-        else:
-            books[id] = Book(
-                id = id,
-                title = row[1],
-                author = row[2],
-                pages = row[3],
-                genres = [row[4]]
-            )
-    return {"books": books}
+@app.get("/books")
+def get_books(sort_by: str = "id", sort_order: str = "asc", min_pages: int = 1, max_pages: int = 10000, title: Optional[str] = None, author: Optional[str] = None, genre: Optional[str] = None):
+    try:
+        query = f"""SELECT DISTINCT b.id id, b.title title, a.author_name author, b.pages pages, g.genre from books b
+                    JOIN authors a ON a.id = b.author_id
+                    JOIN book_genre bg ON bg.book_id = b.id
+                    JOIN genres g ON g.id = bg.genre_id 
+                    WHERE pages >= {min_pages} AND pages <= {max_pages}"""
+        if title:
+            query += f" AND b.title = '{title}'"
+        if author:
+            query += f" AND a.author_name = '{author}'"
+        if genre:
+            query += f""" AND b.id IN (
+                        SELECT b.id FROM books b
+                        JOIN book_genre bg ON bg.book_id = b.id
+                        JOIN genres g ON g.id = bg.genre_id
+                        WHERE g.genre = '{genre}'
+                    )"""
+        query += f" ORDER BY {sort_by} {sort_order}"
+        cursor.execute(query)
+        data = cursor.fetchall()
+        books = {}
+        for row in data:
+            id = row[0]
+            if id in books:
+                books[id].genres.append(row[4])
+            else:
+                books[id] = Book(
+                    id = id,
+                    title = row[1],
+                    author = row[2],
+                    pages = row[3],
+                    genres = [row[4]]
+                )
+        return {"books": books}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
 
 @app.get("/book")
