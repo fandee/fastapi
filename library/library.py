@@ -227,3 +227,23 @@ def update_lib_stock(stock: Stock):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+
+@app.get("/search")
+def search(q: str = None):
+    # search through related public data to hint
+    if q:
+        cursor.execute(f"""SELECT * FROM (
+                            SELECT 'book', title search FROM books
+                            union
+                            SELECT 'author', author_name FROM authors
+                            union
+                            SELECT 'library', name FROM libraries
+                            ) as foo
+                        WHERE LOWER(search) LIKE '%{q.lower()}%'""")
+        hints = {}
+        for row in cursor.fetchall():
+            hints[row[1]] = row[0]
+        return {"hints": hints}
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
