@@ -82,34 +82,38 @@ def get_books(sort_by: str = "id", sort_order: str = "asc", min_pages: int = 1, 
 
 
 @app.get("/book")
-def get_book(title: str):
-    try:
-        cursor.execute("""SELECT DISTINCT b.id, b.title, a.author_name, b.pages, g.genre from books b
-                    JOIN authors a ON a.id = b.author_id
-                    JOIN book_genre bg ON bg.book_id = b.id
-                    JOIN genres g ON g.id = bg.genre_id
-                    WHERE b.title = %s""",
-                    (title,))
-        data = cursor.fetchall()
-        book = Book(
-            id = data[0][0],
-            title = data[0][1],
-            author = data[0][2],
-            pages = data[0][3],
-            genres = []
-        )
-        for row in data:
-            book.genres.append(row[4])
-        return {
-            book.id: {
-                "title": book.title,
-                "author": book.author,
-                "genre": book.genres,
-                "pages": book.pages
+def get_book(title: str = None, author: str = None):
+    # fetching exactly 1 book
+    if title and author:
+        try:
+            cursor.execute("""SELECT DISTINCT b.id, b.title, a.author_name, b.pages, g.genre from books b
+                        JOIN authors a ON a.id = b.author_id
+                        JOIN book_genre bg ON bg.book_id = b.id
+                        JOIN genres g ON g.id = bg.genre_id
+                        WHERE b.title = %s AND a.author_name = %s""",
+                        (title, author))
+            data = cursor.fetchall()
+            book = Book(
+                id = data[0][0],
+                title = data[0][1],
+                author = data[0][2],
+                pages = data[0][3],
+                genres = []
+            )
+            for row in data:
+                book.genres.append(row[4])
+            return {
+                book.id: {
+                    "title": book.title,
+                    "author": book.author,
+                    "genre": book.genres,
+                    "pages": book.pages
+                }
             }
-        }
-    except Exception as e:
-        print("[ERROR]", e)
+        except Exception as e:
+            print("[ERROR]", e)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
