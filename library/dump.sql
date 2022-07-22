@@ -16,7 +16,7 @@ CREATE TABLE books (
     id serial PRIMARY KEY,
     title varchar(50) NOT NULL,
     author_id integer NOT NULL DEFAULT 1,
-    pages smallint DEFAULT(100),
+    pages smallint DEFAULT(100) CHECK(pages >= 1),
     UNIQUE(title, author_id),
     CONSTRAINT fk_author FOREIGN KEY(author_id) REFERENCES authors(id) ON DELETE SET DEFAULT
 );
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS public.library_stock
 (
     library_id integer NOT NULL,
     book_id integer NOT NULL,
-    count integer NOT NULL DEFAULT 1,
+    count integer NOT NULL DEFAULT 1 CHECK (count >= 0),
     UNIQUE(library_id, book_id),
     CONSTRAINT fk_library FOREIGN KEY (library_id)
         REFERENCES public.libraries (id)
