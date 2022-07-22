@@ -128,7 +128,11 @@ def add_book(book: Book):
                 author_id = cursor.fetchone()[0]
             except:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="unknown author")
-        cursor.execute("INSERT INTO books (title, author_id, pages) VALUES (%s, %s, %s)", (book.title, author_id, book.pages))
+        try:
+            cursor.execute("INSERT INTO books (title, author_id, pages) VALUES (%s, %s, %s)", (book.title, author_id, book.pages))
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
         cursor.execute("SELECT max(id) FROM books")
         book.id = cursor.fetchone()[0]
         for genre in book.genres:
@@ -136,10 +140,10 @@ def add_book(book: Book):
                 cursor.execute("INSERT INTO book_genre (book_id, genre_id) VALUES (%s, (SELECT id FROM genres WHERE genre = %s))", (book.id, genre))
             except Exception as e:
                 print("[ERROR]", e)
-        raise HTTPException(status_code=status.HTTP_201_CREATED, detail="book added")
+        raise HTTPException(status_code=status.HTTP_201_CREATED)
     # book is already in DB
     else:
-        raise HTTPException(status_code=status.HTTP_306_RESERVED, detail="This book is already in DataBase")
+        raise HTTPException(status_code=status.HTTP_306_RESERVED, detail="This book exists")
 
 
 @app.delete("/book")
